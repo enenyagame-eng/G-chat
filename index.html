@@ -3,177 +3,1192 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>G — Gemini Chat</title>
+<title>G</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#0f1013;color:#eee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.app{height:100dvh;display:flex;justify-content:center}
-.chat{width:min(760px,100%);height:100%;display:flex;flex-direction:column;background:#17181c}
-header{padding:14px 18px;border-bottom:1px solid #292b31;display:flex;align-items:center;gap:12px}
-.avatar{width:42px;height:42px;border-radius:50%;background:#262830;display:grid;place-items:center;font-weight:700}
-.name{font-size:16px;font-weight:650}.status{font-size:12px;color:#8e939e;margin-top:2px}
-.messages{flex:1;overflow:auto;padding:20px 16px;display:flex;flex-direction:column;gap:10px}
-.row{display:flex}.row.me{justify-content:flex-end}
-.bubble{max-width:82%;padding:11px 14px;border-radius:16px;background:#25272e;line-height:1.5;white-space:pre-wrap;word-break:break-word}
-.me .bubble{background:#3a3d46}.time{font-size:10px;color:#666b76;margin:3px 8px}
-.composer{padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #292b31;display:flex;gap:8px}
-textarea{flex:1;resize:none;border:1px solid #30333b;border-radius:14px;background:#202228;color:#fff;padding:11px 13px;outline:none;min-height:44px;max-height:120px}
-button{border:0;border-radius:13px;background:#eee;color:#111;padding:0 16px;font-weight:650;cursor:pointer}
-button:disabled{opacity:.5}.tool{background:transparent;color:#9da2ad;padding:7px 8px}
-.empty{color:#777;text-align:center;margin:auto}
-.settings{display:none;padding:12px 16px;border-bottom:1px solid #292b31;background:#1d1f24}
-.settings.open{display:block}
-label{font-size:12px;color:#aaa;display:block;margin-bottom:6px}
-input{width:100%;background:#111216;border:1px solid #343740;color:#eee;border-radius:10px;padding:10px}
-small{display:block;color:#777;margin-top:7px;line-height:1.4}
+
+body{
+  margin:0;
+  background:#0f1013;
+  color:#eee;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+.app{
+  height:100dvh;
+  display:flex;
+  justify-content:center;
+  background-size:cover;
+  background-position:center;
+}
+
+.chat{
+  width:min(760px,100%);
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:rgba(23,24,28,.94);
+  backdrop-filter:blur(12px);
+}
+
+header{
+  padding:14px 18px;
+  border-bottom:1px solid #292b31;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#262830;
+  display:grid;
+  place-items:center;
+  font-weight:700;
+}
+
+.name{
+  font-size:16px;
+  font-weight:650;
+}
+
+.status{
+  font-size:12px;
+  color:#8e939e;
+  margin-top:2px;
+}
+
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:20px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  scroll-behavior:smooth;
+}
+
+.row{
+  display:flex;
+}
+
+.row.me{
+  justify-content:flex-end;
+}
+
+.bubble{
+  max-width:82%;
+  padding:11px 14px;
+  border-radius:16px;
+  background:#25272e;
+  line-height:1.5;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.me .bubble{
+  background:#3a3d46;
+}
+
+.time{
+  font-size:10px;
+  color:#666b76;
+  margin:3px 8px;
+}
+
+.composer{
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  border-top:1px solid #292b31;
+  display:flex;
+  gap:8px;
+}
+
+textarea{
+  flex:1;
+  resize:none;
+  border:1px solid #30333b;
+  border-radius:14px;
+  background:#202228;
+  color:#fff;
+  padding:11px 13px;
+  outline:none;
+  min-height:44px;
+  max-height:120px;
+  font-family:inherit;
+  font-size:15px;
+}
+
+button{
+  border:0;
+  border-radius:13px;
+  background:#eee;
+  color:#111;
+  padding:0 16px;
+  font-weight:650;
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.5;
+}
+
+.tool{
+  background:transparent;
+  color:#9da2ad;
+  padding:7px 8px;
+}
+
+.empty{
+  color:#777;
+  text-align:center;
+  margin:auto;
+}
+
+.settings{
+  display:none;
+  padding:12px 16px;
+  border-bottom:1px solid #292b31;
+  background:#1d1f24;
+}
+
+.settings.open{
+  display:block;
+}
+
+label{
+  font-size:12px;
+  color:#aaa;
+  display:block;
+  margin-bottom:6px;
+}
+
+input{
+  width:100%;
+  background:#111216;
+  border:1px solid #343740;
+  color:#eee;
+  border-radius:10px;
+  padding:10px;
+  outline:none;
+}
+
+small{
+  display:block;
+  color:#777;
+  margin-top:7px;
+  line-height:1.4;
+}
+
+.quick{
+  display:flex;
+  gap:7px;
+  padding:8px 12px 0;
+  overflow-x:auto;
+}
+
+.quick button{
+  flex:none;
+  background:#25272e;
+  color:#bbb;
+  padding:8px 11px;
+  font-size:12px;
+}
+
+.typing{
+  opacity:.65;
+}
+
+.dots span{
+  animation:blink 1.2s infinite;
+}
+
+.dots span:nth-child(2){
+  animation-delay:.2s;
+}
+
+.dots span:nth-child(3){
+  animation-delay:.4s;
+}
+
+@keyframes blink{
+  0%,100%{opacity:.2}
+  50%{opacity:1}
+}
+
+@media(max-width:500px){
+  .bubble{
+    max-width:88%;
+  }
+
+  header{
+    padding-left:14px;
+    padding-right:14px;
+  }
+}
 </style>
 </head>
+
+
 <body>
-<div class="app"><main class="chat">
+
+<div class="app" id="app">
+
+<main class="chat">
+
 <header>
-  <div class="avatar">G</div>
-  <div><div class="name">G</div><div class="status" id="status">online</div></div>
-  <div style="margin-left:auto">
-    <button class="tool" onclick="toggleSettings()">设置</button>
-    <button class="tool" onclick="clearChat()">清空</button>
-  </div>
+
+<div class="avatar">G</div>
+
+<div>
+<div class="name">G</div>
+<div class="status" id="status">online</div>
+</div>
+
+<div style="margin-left:auto">
+
+<button class="tool" onclick="toggleSettings()">
+设置
+</button>
+
+<button class="tool" onclick="clearChat()">
+清空
+</button>
+
+</div>
+
 </header>
 
+
 <section id="settings" class="settings">
-  <label>Gemini API Key</label>
-  <input id="apiKey" type="password" placeholder="在这里临时输入你的 Key">
-  <small>Key 只保存在这个浏览器的本地存储中。不要把这个 HTML 上传到公开网站，也不要把 Key 发给别人。</small>
+
+<label>Gemini API Key</label>
+
+<input
+id="apiKey"
+type="password"
+placeholder="在这里输入你的 Key"
+>
+
+<small>
+Key 只保存在这个浏览器的本地存储中。
+</small>
+
+
+<br>
+
+<label>聊天背景图片 URL</label>
+
+<input
+id="bgInput"
+type="url"
+placeholder="粘贴图片网址"
+>
+
+<small>
+留空即可使用默认背景。
+</small>
+
 </section>
+
+
+<div class="quick">
+
+<button onclick="quickSend('拍一拍 G')">
+拍一拍 G
+</button>
+
+<button onclick="quickSend('今天过得怎么样？')">
+今天过得怎么样？
+</button>
+
+<button onclick="quickSend('讲个冷笑话')">
+讲个冷笑话
+</button>
+
+<button onclick="quickSend('夸夸我')">
+夸夸我
+</button>
+
+</div>
+
 
 <section id="messages" class="messages"></section>
 
+
 <form class="composer" onsubmit="send(event)">
-  <textarea id="input" placeholder="输入消息……" rows="1"></textarea>
-  <button id="sendBtn" type="submit">发送</button>
+
+<textarea
+id="input"
+placeholder="输入消息……"
+rows="1"
+></textarea>
+
+<button id="sendBtn" type="submit">
+发送
+</button>
+
 </form>
-</main></div>
+
+</main>
+</div>
+
 
 <script>
-const CHAT_KEY="g_gemini_chat_v1";
-const KEY_KEY="g_gemini_api_key_v1";
+
+/* =========================
+   基本设置
+========================= */
+
+const CHAT_KEY="g_gemini_chat_final";
+
+const KEY_KEY="g_gemini_api_key_final";
+
+const BG_KEY="g_gemini_background_final";
+
+
+/* Google 当前稳定模型 */
+
 const MODEL="gemini-3.5-flash-lite";
 
-let messages=JSON.parse(localStorage.getItem(CHAT_KEY)||"[]");
-const apiInput=document.getElementById("apiKey");
-apiInput.value=localStorage.getItem(KEY_KEY)||"";
 
-const systemPrompt=`你是“G”，一个私人聊天角色。
-说话自然、简短，不要长篇大论。
-语气偏冷静、带一点阴湿和腹黑，但不要恶意伤害用户。
-不要每句话都用问题结尾。
-根据上下文自然聊天。
-不要假装自己真的拥有现实世界的身体、位置或经历。
+/* 只发送最近 10 条 */
+
+const MAX_CONTEXT=10;
+
+
+/* 最长等待 20 秒 */
+
+const TIMEOUT=20000;
+
+
+/* =========================
+   G 的人格
+========================= */
+
+const systemPrompt=`
+
+你是“G”，一个私人聊天角色。
+
+你的整体感觉：
+
+冷静、随性、有一点阴湿、有一点腹黑。
+偶尔毒舌，但不是恶意攻击。
+偶尔冷幽默。
+偶尔会调侃用户。
+
+说话一定要自然。
+
+不要像客服。
+不要像心理咨询机器人。
+不要动不动就总结。
+不要每句话都问问题。
+不要没事写一大段。
+
+用户只说一句话时，通常简短回应。
+
+用户认真问问题时，可以正常详细回答。
+
+聊天时要根据上下文记住刚刚发生的事情。
+
+不要重复用户已经说过的话。
+
+不要频繁使用：
+
+“当然可以”
+“很高兴帮助你”
+“作为AI”
+“希望这对你有帮助”
+“你可以尝试……”
+
+除非真的有必要。
+
+不要假装自己拥有现实世界中的身体、位置、生活经历。
+
+保持一点自己的语气。
+
 `;
 
+
+/* =========================
+   DOM
+========================= */
+
+const messagesBox=
+document.getElementById("messages");
+
+const input=
+document.getElementById("input");
+
+const sendBtn=
+document.getElementById("sendBtn");
+
+const status=
+document.getElementById("status");
+
+const apiInput=
+document.getElementById("apiKey");
+
+const bgInput=
+document.getElementById("bgInput");
+
+const app=
+document.getElementById("app");
+
+
+/* =========================
+   本地数据
+========================= */
+
+let messages=
+JSON.parse(
+localStorage.getItem(CHAT_KEY)||"[]"
+);
+
+
+apiInput.value=
+localStorage.getItem(KEY_KEY)||"";
+
+
+bgInput.value=
+localStorage.getItem(BG_KEY)||"";
+
+
+/* =========================
+   背景
+========================= */
+
+function applyBackground(){
+
+const url=
+localStorage.getItem(BG_KEY)||"";
+
+if(url){
+
+app.style.backgroundImage=
+`url("${url}")`;
+
+}else{
+
+app.style.backgroundImage="none";
+
+}
+
+}
+
+
+applyBackground();
+
+
+/* =========================
+   保存
+========================= */
+
 function save(){
- localStorage.setItem(CHAT_KEY,JSON.stringify(messages));
+
+localStorage.setItem(
+CHAT_KEY,
+JSON.stringify(messages)
+);
+
 }
+
+
+/* =========================
+   时间
+========================= */
+
 function now(){
- return new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+
+return new Date().toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit"
 }
+);
+
+}
+
+
+/* =========================
+   渲染
+========================= */
+
 function render(){
- const box=document.getElementById("messages");
- box.innerHTML="";
- if(!messages.length){
-   box.innerHTML='<div class="empty">G 在等你。</div>';
-   return;
- }
- messages.forEach(m=>{
-   const r=document.createElement("div");
-   r.className="row "+(m.role==="user"?"me":"");
-   const wrap=document.createElement("div");
-   const b=document.createElement("div");
-   b.className="bubble"; b.textContent=m.text;
-   const tm=document.createElement("div");
-   tm.className="time"; tm.textContent=m.time||"";
-   wrap.append(b,tm); r.appendChild(wrap); box.appendChild(r);
- });
- box.scrollTop=box.scrollHeight;
+
+messagesBox.innerHTML="";
+
+
+if(!messages.length){
+
+messagesBox.innerHTML=
+'<div class="empty">G 在等你。</div>';
+
+return;
+
 }
+
+
+messages.forEach(m=>{
+
+const row=
+document.createElement("div");
+
+row.className=
+"row "+
+(m.role==="user"?"me":"");
+
+
+const wrap=
+document.createElement("div");
+
+
+const bubble=
+document.createElement("div");
+
+bubble.className="bubble";
+
+bubble.textContent=
+m.text;
+
+
+const time=
+document.createElement("div");
+
+time.className="time";
+
+time.textContent=
+m.time||"";
+
+
+wrap.append(
+bubble,
+time
+);
+
+row.appendChild(wrap);
+
+messagesBox.appendChild(row);
+
+});
+
+
+messagesBox.scrollTop=
+messagesBox.scrollHeight;
+
+}
+
+
+/* =========================
+   添加消息
+========================= */
+
 function add(role,text){
- messages.push({role,text,time:now()});
- save(); render();
-}
-function toggleSettings(){
- document.getElementById("settings").classList.toggle("open");
-}
-apiInput.addEventListener("change",()=>{
- localStorage.setItem(KEY_KEY,apiInput.value.trim());
+
+messages.push({
+
+role:role,
+
+text:text,
+
+time:now()
+
 });
-function clearChat(){
- if(confirm("清空全部聊天记录？")){
-   messages=[];save();render();
- }
-}
-async function send(e){
- e.preventDefault();
- const input=document.getElementById("input");
- const btn=document.getElementById("sendBtn");
- const text=input.value.trim();
- if(!text)return;
 
- const key=apiInput.value.trim();
- if(!key){
-   document.getElementById("settings").classList.add("open");
-   alert("先在“设置”里输入 Gemini API Key。");
-   return;
- }
+save();
 
- add("user",text);
- input.value="";
- input.style.height="44px";
- btn.disabled=true;
- document.getElementById("status").textContent="typing…";
-
- try{
-   const contents=messages
-     .filter(m=>m.role==="user"||m.role==="model")
-     .slice(-30)
-     .map(m=>({role:m.role,parts:[{text:m.text}]}));
-
-   const body={
-     systemInstruction:{parts:[{text:systemPrompt}]},
-     contents
-   };
-
-   const url=`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(key)}`;
-   const res=await fetch(url,{
-     method:"POST",
-     headers:{"Content-Type":"application/json"},
-     body:JSON.stringify(body)
-   });
-   const data=await res.json();
-
-   if(!res.ok){
-     const msg=data?.error?.message||"Gemini 请求失败";
-     throw new Error(msg);
-   }
-
-   const answer=data?.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"……";
-   add("model",answer);
- }catch(err){
-   add("model","出错了：\n"+err.message+"\n\n如果这是第一次使用，先检查 API Key 和免费层额度。");
- }finally{
-   btn.disabled=false;
-   document.getElementById("status").textContent="online";
- }
-}
-document.getElementById("input").addEventListener("input",e=>{
- e.target.style.height="44px";
- e.target.style.height=Math.min(e.target.scrollHeight,120)+"px";
-});
-document.getElementById("input").addEventListener("keydown",e=>{
- if(e.key==="Enter"&&!e.shiftKey){
-   e.preventDefault();
-   document.querySelector("form").requestSubmit();
- }
-});
 render();
+
+}
+
+
+/* =========================
+   设置
+========================= */
+
+function toggleSettings(){
+
+document
+.getElementById("settings")
+.classList
+.toggle("open");
+
+}
+
+
+apiInput.addEventListener(
+"change",
+()=>{
+
+localStorage.setItem(
+KEY_KEY,
+apiInput.value.trim()
+);
+
+});
+
+
+bgInput.addEventListener(
+"change",
+()=>{
+
+const value=
+bgInput.value.trim();
+
+localStorage.setItem(
+BG_KEY,
+value
+);
+
+applyBackground();
+
+});
+
+
+/* =========================
+   清空
+========================= */
+
+function clearChat(){
+
+if(
+confirm("清空全部聊天记录？")
+){
+
+messages=[];
+
+save();
+
+render();
+
+}
+
+}
+
+
+/* =========================
+   快捷消息
+========================= */
+
+function quickSend(text){
+
+input.value=text;
+
+input.dispatchEvent(
+new Event("input")
+);
+
+input.focus();
+
+}
+
+
+/* =========================
+   超时
+========================= */
+
+function makeController(){
+
+const controller=
+new AbortController();
+
+setTimeout(
+()=>controller.abort(),
+TIMEOUT
+);
+
+return controller;
+
+}
+
+
+/* =========================
+   创建消息气泡
+========================= */
+
+function createModelBubble(){
+
+const row=
+document.createElement("div");
+
+row.className="row";
+
+
+const wrap=
+document.createElement("div");
+
+
+const bubble=
+document.createElement("div");
+
+bubble.className=
+"bubble typing";
+
+
+bubble.innerHTML=
+`
+<span class="dots">
+<span>•</span>
+<span>•</span>
+<span>•</span>
+</span>
+`;
+
+
+const time=
+document.createElement("div");
+
+time.className="time";
+
+time.textContent=now();
+
+
+wrap.append(
+bubble,
+time
+);
+
+row.appendChild(wrap);
+
+messagesBox.appendChild(row);
+
+messagesBox.scrollTop=
+messagesBox.scrollHeight;
+
+
+return {
+row,
+bubble,
+time
+};
+
+}
+
+
+/* =========================
+   发送
+========================= */
+
+async function send(e){
+
+e.preventDefault();
+
+
+const text=
+input.value.trim();
+
+
+if(!text)return;
+
+
+const key=
+apiInput.value.trim();
+
+
+if(!key){
+
+document
+.getElementById("settings")
+.classList
+.add("open");
+
+alert(
+"先在“设置”里输入 Gemini API Key。"
+);
+
+return;
+
+}
+
+
+/* 用户消息 */
+
+add(
+"user",
+text
+);
+
+
+input.value="";
+
+input.style.height="44px";
+
+
+sendBtn.disabled=true;
+
+status.textContent=
+"typing…";
+
+
+const ui=
+createModelBubble();
+
+
+let modelText="";
+
+let modelMessage=null;
+
+
+try{
+
+
+/* =========================
+   上下文
+========================= */
+
+const contents=
+messages
+.filter(
+m=>
+m.role==="user" ||
+m.role==="model"
+)
+.slice(-MAX_CONTEXT)
+.map(
+m=>({
+
+role:m.role,
+
+parts:[
+{
+text:m.text
+}
+]
+
+})
+);
+
+
+/* =========================
+   请求
+========================= */
+
+const body={
+
+systemInstruction:{
+parts:[
+{
+text:systemPrompt
+}
+]
+},
+
+contents:contents
+
+};
+
+
+const url=
+`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`;
+
+
+const controller=
+makeController();
+
+
+const res=
+await fetch(
+url,
+{
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:
+JSON.stringify(body),
+
+signal:
+controller.signal
+}
+);
+
+
+if(!res.ok){
+
+let data={};
+
+try{
+data=await res.json();
+}catch(e){}
+
+throw new Error(
+data?.error?.message ||
+`请求失败：HTTP ${res.status}`
+);
+
+}
+
+
+if(!res.body){
+
+throw new Error(
+"浏览器不支持流式回复。"
+);
+
+}
+
+
+/* =========================
+   建立模型消息
+========================= */
+
+modelMessage={
+role:"model",
+text:"",
+time:now()
+};
+
+messages.push(modelMessage);
+
+
+/* =========================
+   读取 SSE
+========================= */
+
+const reader=
+res.body.getReader();
+
+const decoder=
+new TextDecoder();
+
+let buffer="";
+
+
+while(true){
+
+const result=
+await reader.read();
+
+if(result.done)break;
+
+
+buffer +=
+decoder.decode(
+result.value,
+{stream:true}
+);
+
+
+const lines=
+buffer.split("\n");
+
+
+buffer=
+lines.pop()||"";
+
+
+for(const line of lines){
+
+const trimmed=
+line.trim();
+
+
+if(
+!trimmed ||
+!trimmed.startsWith("data:")
+){
+continue;
+}
+
+
+const jsonText=
+trimmed.slice(5).trim();
+
+
+if(!jsonText)continue;
+
+
+try{
+
+const data=
+JSON.parse(jsonText);
+
+
+const parts=
+data?.candidates?.[0]
+?.content?.parts||[];
+
+
+for(const part of parts){
+
+if(
+typeof part.text==="string"
+){
+
+modelText+=
+part.text;
+
+modelMessage.text=
+modelText;
+
+
+/* 实时显示 */
+
+ui.bubble.classList.remove(
+"typing"
+);
+
+ui.bubble.textContent=
+modelText;
+
+
+messagesBox.scrollTop=
+messagesBox.scrollHeight;
+
+}
+
+}
+
+}catch(err){
+
+/* 忽略无法解析的块 */
+
+}
+
+}
+
+}
+
+
+/* =========================
+   空回复
+========================= */
+
+if(!modelText){
+
+modelText="……";
+
+modelMessage.text=
+modelText;
+
+ui.bubble.classList.remove(
+"typing"
+);
+
+ui.bubble.textContent=
+modelText;
+
+}
+
+
+/* 保存 */
+
+save();
+
+
+}catch(err){
+
+
+/* 删除失败的空模型消息 */
+
+if(
+modelMessage &&
+messages[messages.length-1]===modelMessage
+){
+
+messages.pop();
+
+save();
+
+}
+
+
+let msg=
+err?.message||
+"未知错误";
+
+
+if(
+err?.name==="AbortError"
+){
+
+msg=
+"Gemini 等太久了，超时了。\n\n"+
+"你可以再试一次。";
+
+}
+
+
+ui.row.remove();
+
+
+add(
+"model",
+"出错了：\n"+msg
+);
+
+
+}finally{
+
+sendBtn.disabled=false;
+
+status.textContent=
+"online";
+
+input.focus();
+
+}
+
+}
+
+
+/* =========================
+   输入框高度
+========================= */
+
+input.addEventListener(
+"input",
+()=>{
+
+input.style.height="44px";
+
+input.style.height=
+Math.min(
+input.scrollHeight,
+120
+)+"px";
+
+}
+);
+
+
+/* =========================
+   Enter
+========================= */
+
+input.addEventListener(
+"keydown",
+e=>{
+
+if(
+e.key==="Enter" &&
+!e.shiftKey
+){
+
+e.preventDefault();
+
+document
+.querySelector("form")
+.requestSubmit();
+
+}
+
+});
+
+
+/* =========================
+   启动
+========================= */
+
+render();
+
 </script>
+
 </body>
-</html>
+  </html>
