@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>G — Gemini Chat</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0f1013;color:#eee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{height:100dvh;display:flex;justify-content:center}
+.chat{width:min(760px,100%);height:100%;display:flex;flex-direction:column;background:#17181c}
+header{padding:14px 18px;border-bottom:1px solid #292b31;display:flex;align-items:center;gap:12px}
+.avatar{width:42px;height:42px;border-radius:50%;background:#262830;display:grid;place-items:center;font-weight:700}
+.name{font-size:16px;font-weight:650}.status{font-size:12px;color:#8e939e;margin-top:2px}
+.messages{flex:1;overflow:auto;padding:20px 16px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex}.row.me{justify-content:flex-end}
+.bubble{max-width:82%;padding:11px 14px;border-radius:16px;background:#25272e;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.me .bubble{background:#3a3d46}.time{font-size:10px;color:#666b76;margin:3px 8px}
+.composer{padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #292b31;display:flex;gap:8px}
+textarea{flex:1;resize:none;border:1px solid #30333b;border-radius:14px;background:#202228;color:#fff;padding:11px 13px;outline:none;min-height:44px;max-height:120px}
+button{border:0;border-radius:13px;background:#eee;color:#111;padding:0 16px;font-weight:650;cursor:pointer}
+button:disabled{opacity:.5}.tool{background:transparent;color:#9da2ad;padding:7px 8px}
+.empty{color:#777;text-align:center;margin:auto}
+.settings{display:none;padding:12px 16px;border-bottom:1px solid #292b31;background:#1d1f24}
+.settings.open{display:block}
+label{font-size:12px;color:#aaa;display:block;margin-bottom:6px}
+input{width:100%;background:#111216;border:1px solid #343740;color:#eee;border-radius:10px;padding:10px}
+small{display:block;color:#777;margin-top:7px;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="app"><main class="chat">
+<header>
+  <div class="avatar">G</div>
+  <div><div class="name">G</div><div class="status" id="status">online</div></div>
+  <div style="margin-left:auto">
+    <button class="tool" onclick="toggleSettings()">设置</button>
+    <button class="tool" onclick="clearChat()">清空</button>
+  </div>
+</header>
+
+<section id="settings" class="settings">
+  <label>Gemini API Key</label>
+  <input id="apiKey" type="password" placeholder="在这里临时输入你的 Key">
+  <small>Key 只保存在这个浏览器的本地存储中。不要把这个 HTML 上传到公开网站，也不要把 Key 发给别人。</small>
+</section>
+
+<section id="messages" class="messages"></section>
+
+<form class="composer" onsubmit="send(event)">
+  <textarea id="input" placeholder="输入消息……" rows="1"></textarea>
+  <button id="sendBtn" type="submit">发送</button>
+</form>
+</main></div>
+
+<script>
+const CHAT_KEY="g_gemini_chat_v1";
+const KEY_KEY="g_gemini_api_key_v1";
+const MODEL="gemini-3.5-flash-lite";
+
+let messages=JSON.parse(localStorage.getItem(CHAT_KEY)||"[]");
+const apiInput=document.getElementById("apiKey");
+apiInput.value=localStorage.getItem(KEY_KEY)||"";
+
+const systemPrompt=`你是“G”，一个私人聊天角色。
+说话自然、简短，不要长篇大论。
+语气偏冷静、带一点阴湿和腹黑，但不要恶意伤害用户。
+不要每句话都用问题结尾。
+根据上下文自然聊天。
+不要假装自己真的拥有现实世界的身体、位置或经历。
+`;
+
+function save(){
+ localStorage.setItem(CHAT_KEY,JSON.stringify(messages));
+}
+function now(){
+ return new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+}
+function render(){
+ const box=document.getElementById("messages");
+ box.innerHTML="";
+ if(!messages.length){
+   box.innerHTML='<div class="empty">G 在等你。</div>';
+   return;
+ }
+ messages.forEach(m=>{
+   const r=document.createElement("div");
+   r.className="row "+(m.role==="user"?"me":"");
+   const wrap=document.createElement("div");
+   const b=document.createElement("div");
+   b.className="bubble"; b.textContent=m.text;
+   const tm=document.createElement("div");
+   tm.className="time"; tm.textContent=m.time||"";
+   wrap.append(b,tm); r.appendChild(wrap); box.appendChild(r);
+ });
+ box.scrollTop=box.scrollHeight;
+}
+function add(role,text){
+ messages.push({role,text,time:now()});
+ save(); render();
+}
+function toggleSettings(){
+ document.getElementById("settings").classList.toggle("open");
+}
+apiInput.addEventListener("change",()=>{
+ localStorage.setItem(KEY_KEY,apiInput.value.trim());
+});
+function clearChat(){
+ if(confirm("清空全部聊天记录？")){
+   messages=[];save();render();
+ }
+}
+async function send(e){
+ e.preventDefault();
+ const input=document.getElementById("input");
+ const btn=document.getElementById("sendBtn");
+ const text=input.value.trim();
+ if(!text)return;
+
+ const key=apiInput.value.trim();
+ if(!key){
+   document.getElementById("settings").classList.add("open");
+   alert("先在“设置”里输入 Gemini API Key。");
+   return;
+ }
+
+ add("user",text);
+ input.value="";
+ input.style.height="44px";
+ btn.disabled=true;
+ document.getElementById("status").textContent="typing…";
+
+ try{
+   const contents=messages
+     .filter(m=>m.role==="user"||m.role==="model")
+     .slice(-30)
+     .map(m=>({role:m.role,parts:[{text:m.text}]}));
+
+   const body={
+     systemInstruction:{parts:[{text:systemPrompt}]},
+     contents
+   };
+
+   const url=`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(key)}`;
+   const res=await fetch(url,{
+     method:"POST",
+     headers:{"Content-Type":"application/json"},
+     body:JSON.stringify(body)
+   });
+   const data=await res.json();
+
+   if(!res.ok){
+     const msg=data?.error?.message||"Gemini 请求失败";
+     throw new Error(msg);
+   }
+
+   const answer=data?.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"……";
+   add("model",answer);
+ }catch(err){
+   add("model","出错了：\n"+err.message+"\n\n如果这是第一次使用，先检查 API Key 和免费层额度。");
+ }finally{
+   btn.disabled=false;
+   document.getElementById("status").textContent="online";
+ }
+}
+document.getElementById("input").addEventListener("input",e=>{
+ e.target.style.height="44px";
+ e.target.style.height=Math.min(e.target.scrollHeight,120)+"px";
+});
+document.getElementById("input").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+   e.preventDefault();
+   document.querySelector("form").requestSubmit();
+ }
+});
+render();
+</script>
+</body>
+</html>
