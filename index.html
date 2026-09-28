@@ -213,7 +213,7 @@ small{display:block;color:#777;margin-top:4px;line-height:1.4;font-size:11.5px}
 const CHAT_KEY="g_gemini_chat_v2";
 const KEY_KEY="g_gemini_api_key_v2";
 const BG_KEY="g_gemini_bg_v2";
-const MODEL="gemini-2.5-flash"; // 自动对齐可用版本
+const MODEL="gemini-3.8-flash"; // 已更新为最新可用模型
 
 let messages=JSON.parse(localStorage.getItem(CHAT_KEY)||"[]");
 const apiInput=document.getElementById("apiKey");
@@ -337,6 +337,51 @@ async function send(e){
    };
 
    const url=`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(key)}`;
+   const res=await fetch(url,{
+     method:"POST",
+     headers:{"Content-Type":"application/json"},
+     body:JSON.stringify(body)
+   });
+   const data=await res.json();
+
+   // 移除输入中提示
+   const indicator = document.getElementById("typingIndicator");
+   if(indicator) indicator.remove();
+
+   if(!res.ok){
+     const msg=data?.error?.message||"Gemini 请求失败";
+     throw new Error(msg);
+   }
+
+   const answer=data?.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"……";
+   add("model",answer);
+ }catch(err){
+   const indicator = document.getElementById("typingIndicator");
+   if(indicator) indicator.remove();
+   add("model","出错了：\n"+err.message+"\n\n请检查 API Key 是否正确或额度是否超限。");
+ }finally{
+   btn.disabled=false;
+   document.getElementById("status").textContent="online";
+   document.getElementById("statusDot").style.background = "#34c759";
+ }
+}
+
+document.getElementById("input").addEventListener("input",e=>{
+ e.target.style.height="44px";
+ e.target.style.height=Math.min(e.target.scrollHeight,120)+"px";
+});
+document.getElementById("input").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+   e.preventDefault();
+   document.querySelector("form").requestSubmit();
+ }
+});
+
+render();
+</script>
+</body>
+</html>
+}:generateContent?key=${encodeURIComponent(key)}`;
    const res=await fetch(url,{
      method:"POST",
      headers:{"Content-Type":"application/json"},
