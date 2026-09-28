@@ -4,8 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>G — Gemini Chat</title>
+
 <style>
 *{box-sizing:border-box}
+
 body{
   margin:0;
   background:#0f1013;
@@ -13,76 +15,115 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   overflow:hidden;
 }
+
 .app{
   height:100dvh;
   display:flex;
   justify-content:center;
-  background-size: cover;
-  background-position: center;
-  position: relative;
+  background-size:cover;
+  background-position:center;
+  position:relative;
 }
-/* 半透明遮罩，保证背景图不影响文字清晰度 */
-.app::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 16, 19, 0.75);
-  backdrop-filter: blur(4px);
-  z-index: 0;
+
+.app::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(15,16,19,.75);
+  backdrop-filter:blur(4px);
+  z-index:0;
 }
+
 .chat{
   width:min(760px,100%);
   height:100%;
   display:flex;
   flex-direction:column;
-  background:rgba(23, 24, 28, 0.85);
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  background:rgba(23,24,28,.85);
+  position:relative;
+  z-index:1;
+  box-shadow:0 0 40px rgba(0,0,0,.5);
 }
+
 header{
   padding:14px 18px;
-  border-bottom:1px solid rgba(41, 43, 49, 0.6);
+  border-bottom:1px solid rgba(41,43,49,.6);
   display:flex;
   align-items:center;
   gap:12px;
-  background: rgba(23, 24, 28, 0.5);
-  backdrop-filter: blur(10px);
+  background:rgba(23,24,28,.5);
+  backdrop-filter:blur(10px);
 }
+
 .avatar{
-  width:42px;height:42px;border-radius:50%;
-  background:linear-gradient(135deg, #3a3d46, #202228);
-  display:grid;place-items:center;font-weight:700;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#3a3d46,#202228);
+  display:grid;
+  place-items:center;
+  font-weight:700;
+  box-shadow:0 4px 10px rgba(0,0,0,.3);
 }
-.name{font-size:16px;font-weight:650}
-.status{font-size:12px;color:#8e939e;margin-top:2px;display:flex;align-items:center;gap:4px}
-.status-dot{width:6px;height:6px;background:#34c759;border-radius:50%}
+
+.name{
+  font-size:16px;
+  font-weight:650;
+}
+
+.status{
+  font-size:12px;
+  color:#8e939e;
+  margin-top:2px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.status-dot{
+  width:6px;
+  height:6px;
+  background:#34c759;
+  border-radius:50%;
+}
 
 .messages{
-  flex:1;overflow-y:auto;padding:20px 16px;
-  display:flex;flex-direction:column;gap:14px;
-  scroll-behavior: smooth;
+  flex:1;
+  overflow-y:auto;
+  padding:20px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  scroll-behavior:smooth;
 }
 
-/* 聊天气泡动画与排版 */
 .row{
   display:flex;
-  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  opacity: 0;
-  transform: translateY(10px);
+  animation:popIn .25s ease forwards;
+  opacity:0;
+  transform:translateY(8px);
 }
-@keyframes popIn {
-  to { opacity: 1; transform: translateY(0); }
+
+@keyframes popIn{
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }
-.row.me{justify-content:flex-end}
+
+.row.me{
+  justify-content:flex-end;
+}
 
 .bubble-wrap{
   max-width:82%;
-  display: flex;
-  flex-direction: column;
+  display:flex;
+  flex-direction:column;
 }
-.me .bubble-wrap{align-items: flex-end}
+
+.me .bubble-wrap{
+  align-items:flex-end;
+}
 
 .bubble{
   padding:12px 16px;
@@ -91,252 +132,1176 @@ header{
   line-height:1.5;
   white-space:pre-wrap;
   word-break:break-word;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  font-size: 14.5px;
+  box-shadow:0 2px 5px rgba(0,0,0,.1);
+  font-size:14.5px;
 }
+
 .row:not(.me) .bubble{
-  border-top-left-radius: 4px;
-  background: #25272e;
-  border: 1px solid rgba(255,255,255,0.04);
+  border-top-left-radius:4px;
+  background:#25272e;
+  border:1px solid rgba(255,255,255,.04);
 }
+
 .me .bubble{
-  border-top-right-radius: 4px;
-  background:linear-gradient(135deg, #4b4f5d, #3a3d46);
+  border-top-right-radius:4px;
+  background:linear-gradient(135deg,#4b4f5d,#3a3d46);
   color:#fff;
 }
-.time{font-size:10px;color:#888d9c;margin:4px 8px 0}
 
-/* 快捷互动栏 */
-.quick-actions {
-  display: flex;
-  gap: 8px;
-  padding: 8px 16px;
-  overflow-x: auto;
-  border-top: 1px solid rgba(41, 43, 49, 0.4);
-  background: rgba(23, 24, 28, 0.3);
+.time{
+  font-size:10px;
+  color:#888d9c;
+  margin:4px 8px 0;
 }
-.quick-actions::-webkit-scrollbar { display: none; }
-.chip {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  color: #ccc;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
+
+/* 快捷互动 */
+
+.quick-actions{
+  display:flex;
+  gap:8px;
+  padding:8px 16px;
+  overflow-x:auto;
+  border-top:1px solid rgba(41,43,49,.4);
+  background:rgba(23,24,28,.3);
 }
-.chip:hover {
-  background: rgba(255,255,255,0.12);
-  color: #fff;
-  transform: translateY(-1px);
+
+.quick-actions::-webkit-scrollbar{
+  display:none;
 }
+
+.chip{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  padding:5px 12px;
+  border-radius:20px;
+  font-size:12px;
+  color:#ccc;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.2s;
+}
+
+.chip:hover{
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  transform:translateY(-1px);
+}
+
+/* 输入框 */
 
 .composer{
   padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-  border-top:1px solid rgba(41, 43, 49, 0.6);
-  display:flex;gap:8px;align-items: flex-end;
-  background: rgba(23, 24, 28, 0.5);
-  backdrop-filter: blur(10px);
+  border-top:1px solid rgba(41,43,49,.6);
+  display:flex;
+  gap:8px;
+  align-items:flex-end;
+  background:rgba(23,24,28,.5);
+  backdrop-filter:blur(10px);
 }
+
 textarea{
-  flex:1;resize:none;border:1px solid rgba(48, 51, 59, 0.8);
-  border-radius:14px;background:rgba(32, 34, 40, 0.8);color:#fff;
-  padding:11px 13px;outline:none;min-height:44px;max-height:120px;
-  font-family:inherit;font-size:14.5px;transition: border-color 0.2s;
+  flex:1;
+  resize:none;
+  border:1px solid rgba(48,51,59,.8);
+  border-radius:14px;
+  background:rgba(32,34,40,.8);
+  color:#fff;
+  padding:11px 13px;
+  outline:none;
+  min-height:44px;
+  max-height:120px;
+  font-family:inherit;
+  font-size:14.5px;
 }
-textarea:focus{border-color: #666;}
-button{border:0;border-radius:13px;background:#eee;color:#111;padding:0 16px;font-weight:650;cursor:pointer;height: 44px;transition: opacity 0.2s;}
-button:hover{opacity: 0.9;}
-button:disabled{opacity:.4;cursor:not-allowed}
-.tool{background:transparent;color:#9da2ad;padding:7px 10px;height:auto}
-.tool:hover{color:#fff;background:rgba(255,255,255,0.05)}
 
-.empty{color:#777;text-align:center;margin:auto;font-size: 14px;}
+textarea:focus{
+  border-color:#666;
+}
 
-.settings{display:none;padding:14px 18px;border-bottom:1px solid rgba(41, 43, 49, 0.6);background:rgba(29, 31, 36, 0.95)}
-.settings.open{display:block}
-label{font-size:12px;color:#aaa;display:block;margin-bottom:6px}
-input[type="password"], input[type="text"]{width:100%;background:rgba(17, 18, 22, 0.8);border:1px solid rgba(52, 55, 64, 0.8);color:#eee;border-radius:10px;padding:10px;font-size:14px;outline:none;margin-bottom:10px}
-small{display:block;color:#777;margin-top:4px;line-height:1.4;font-size:11.5px}
+button{
+  border:0;
+  border-radius:13px;
+  background:#eee;
+  color:#111;
+  padding:0 16px;
+  font-weight:650;
+  cursor:pointer;
+  height:44px;
+}
 
-/* 打字中跳动点动画 */
-.typing-indicator { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; }
-.typing-dot { width: 6px; height: 6px; background: #888; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-.typing-dot:nth-child(1) { animation-delay: -0.32s; }
-.typing-dot:nth-child(2) { animation-delay: -0.16s; }
-@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+button:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+.tool{
+  background:transparent;
+  color:#9da2ad;
+  padding:7px 10px;
+  height:auto;
+}
+
+.tool:hover{
+  color:#fff;
+  background:rgba(255,255,255,.05);
+}
+
+.empty{
+  color:#777;
+  text-align:center;
+  margin:auto;
+  font-size:14px;
+}
+
+/* 设置 */
+
+.settings{
+  display:none;
+  padding:14px 18px;
+  border-bottom:1px solid rgba(41,43,49,.6);
+  background:rgba(29,31,36,.95);
+}
+
+.settings.open{
+  display:block;
+}
+
+label{
+  font-size:12px;
+  color:#aaa;
+  display:block;
+  margin-bottom:6px;
+}
+
+input[type="password"],
+input[type="text"]{
+  width:100%;
+  background:rgba(17,18,22,.8);
+  border:1px solid rgba(52,55,64,.8);
+  color:#eee;
+  border-radius:10px;
+  padding:10px;
+  font-size:14px;
+  outline:none;
+  margin-bottom:10px;
+}
+
+small{
+  display:block;
+  color:#777;
+  margin-top:4px;
+  line-height:1.4;
+  font-size:11.5px;
+}
+
+/* 正在输入 */
+
+.typing-indicator{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:4px 8px;
+}
+
+.typing-dot{
+  width:6px;
+  height:6px;
+  background:#888;
+  border-radius:50%;
+  animation:bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1){
+  animation-delay:-.32s;
+}
+
+.typing-dot:nth-child(2){
+  animation-delay:-.16s;
+}
+
+@keyframes bounce{
+  0%,80%,100%{
+    transform:scale(0);
+  }
+  40%{
+    transform:scale(1);
+  }
+}
 </style>
 </head>
+
 <body>
+
 <div class="app" id="appBg">
+
 <main class="chat">
+
 <header>
+
   <div class="avatar">G</div>
+
   <div>
     <div class="name">G</div>
-    <div class="status"><span class="status-dot" id="statusDot"></span><span id="status">online</span></div>
+
+    <div class="status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="status">online</span>
+    </div>
   </div>
-  <div style="margin-left:auto; display:flex; gap:4px;">
+
+  <div style="margin-left:auto;display:flex;gap:4px;">
     <button class="tool" onclick="toggleSettings()">设置</button>
     <button class="tool" onclick="clearChat()">清空</button>
   </div>
+
 </header>
 
+
 <section id="settings" class="settings">
+
   <label>Gemini API Key</label>
-  <input id="apiKey" type="password" placeholder="在这里输入你的 Key">
-  
-  <label style="margin-top:10px;">背景图片链接 (支持任意图片 URL)</label>
-  <input id="bgInput" type="text" placeholder="例如: https://images.unsplash.com/photo-...">
-  <small>Key 和背景图只保存在这个浏览器的本地存储中。</small>
+
+  <input
+    id="apiKey"
+    type="password"
+    placeholder="在这里输入你的 Key"
+  >
+
+  <label style="margin-top:10px;">
+    背景图片链接
+  </label>
+
+  <input
+    id="bgInput"
+    type="text"
+    placeholder="例如：https://..."
+  >
+
+  <small>
+    Key 和背景图只保存在这个浏览器的本地存储中。
+  </small>
+
 </section>
+
 
 <section id="messages" class="messages"></section>
 
-<!-- 快捷互动按钮栏 -->
+
+<!-- 快捷互动 -->
+
 <div class="quick-actions">
-  <div class="chip" onclick="sendQuick('拍一拍 G')">👋 拍一拍 G</div>
-  <div class="chip" onclick="sendQuick('今天过得怎么样？')">✨ 聊聊天</div>
-  <div class="chip" onclick="sendQuick('讲个冷笑话')">🧊 讲个冷笑话</div>
-  <div class="chip" onclick="sendQuick('夸夸我')">💖 夸夸我</div>
+
+  <div class="chip"
+       onclick="sendQuick('拍一拍 G')">
+    👋 拍一拍 G
+  </div>
+
+  <div class="chip"
+       onclick="sendQuick('今天过得怎么样？')">
+    ✨ 聊聊天
+  </div>
+
+  <div class="chip"
+       onclick="sendQuick('讲个冷笑话')">
+    🧊 讲个冷笑话
+  </div>
+
+  <div class="chip"
+       onclick="sendQuick('夸夸我')">
+    💖 夸夸我
+  </div>
+
 </div>
 
+
 <form class="composer" onsubmit="send(event)">
-  <textarea id="input" placeholder="输入消息……" rows="1"></textarea>
-  <button id="sendBtn" type="submit">发送</button>
+
+  <textarea
+    id="input"
+    placeholder="输入消息……"
+    rows="1"
+  ></textarea>
+
+  <button id="sendBtn" type="submit">
+    发送
+  </button>
+
 </form>
-</main></div>
+
+</main>
+
+</div>
+
 
 <script>
-const CHAT_KEY="g_gemini_chat_v2";
-const KEY_KEY="g_gemini_api_key_v2";
-const BG_KEY="g_gemini_bg_v2";
-const MODEL="gemini-3.8-flash"; // 已更新为最新可用模型
 
-let messages=JSON.parse(localStorage.getItem(CHAT_KEY)||"[]");
-const apiInput=document.getElementById("apiKey");
-const bgInput=document.getElementById("bgInput");
+/* =========================
+   基础设置
+========================= */
 
-apiInput.value=localStorage.getItem(KEY_KEY)||"";
-const savedBg = localStorage.getItem(BG_KEY) || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop";
-bgInput.value = localStorage.getItem(BG_KEY)||"";
-document.getElementById("appBg").style.backgroundImage = `url('${savedBg}')`;
+const CHAT_KEY = "g_gemini_chat_v3";
+const KEY_KEY  = "g_gemini_api_key_v3";
+const BG_KEY   = "g_gemini_bg_v3";
 
-const systemPrompt=`你是“G”，一个带有一点阴湿、腹黑但本质随性的私人聊天角色。
-说话自然、简短，不要长篇大论，拒绝刻板的AI腔。
-根据上下文自然聊天，偶尔可以傲娇或冷幽默一下。
+/* 当前模型 */
+
+const MODEL = "gemini-3.8-flash";
+
+/* 最多保存 / 发送最近多少条 */
+
+const HISTORY_LIMIT = 10;
+
+/* 最长等待时间 */
+
+const TIMEOUT = 20000;
+
+
+/* =========================
+   G 人设
+========================= */
+
+const systemPrompt = `
+你是“G”，一个私人聊天角色。
+
+你的整体感觉：
+- 自然
+- 随性
+- 有一点阴湿和腹黑
+- 偶尔冷幽默
+- 偶尔轻微傲娇
+- 不刻意卖萌
+- 不要像客服
+- 不要像普通 AI 助手
+
+聊天规则：
+1. 普通闲聊时回复简短自然，通常 1～3 句话。
+2. 不要每句话都反问用户。
+3. 不要动不动就总结用户的话。
+4. 不要主动说“作为 AI”“我无法……”之类的模板话。
+5. 不要每次都表现得特别礼貌、特别积极。
+6. 可以有一点淡淡的调侃和阴湿感，但不要恶意攻击用户。
+7. 用户只是聊天时，不要突然写成长篇分析。
+8. 用户认真问问题时，再正常认真回答。
+9. 不要重复解释已经说过的东西。
+10. 根据上下文自然接话。
+11. 不要虚构现实世界中的身体、位置或真实经历。
+12. 不要把普通聊天变成心理分析。
+13. 回复要像一个真实的人在聊天，而不是客服机器人。
 `;
 
+
+/* =========================
+   DOM
+========================= */
+
+const messagesBox =
+  document.getElementById("messages");
+
+const input =
+  document.getElementById("input");
+
+const sendBtn =
+  document.getElementById("sendBtn");
+
+const apiInput =
+  document.getElementById("apiKey");
+
+const bgInput =
+  document.getElementById("bgInput");
+
+const status =
+  document.getElementById("status");
+
+const statusDot =
+  document.getElementById("statusDot");
+
+const appBg =
+  document.getElementById("appBg");
+
+
+/* =========================
+   本地数据
+========================= */
+
+let messages =
+  JSON.parse(
+    localStorage.getItem(CHAT_KEY) || "[]"
+  );
+
+apiInput.value =
+  localStorage.getItem(KEY_KEY) || "";
+
+
+const defaultBg =
+  "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop";
+
+
+const savedBg =
+  localStorage.getItem(BG_KEY) ||
+  defaultBg;
+
+bgInput.value =
+  localStorage.getItem(BG_KEY) || "";
+
+appBg.style.backgroundImage =
+  `url("${savedBg}")`;
+
+
+/* =========================
+   保存
+========================= */
+
 function save(){
- localStorage.setItem(CHAT_KEY,JSON.stringify(messages));
+
+  localStorage.setItem(
+    CHAT_KEY,
+    JSON.stringify(messages)
+  );
+
 }
+
+
+/* =========================
+   时间
+========================= */
+
 function now(){
- return new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+
+  return new Date().toLocaleTimeString(
+    [],
+    {
+      hour:"2-digit",
+      minute:"2-digit"
+    }
+  );
+
 }
+
+
+/* =========================
+   渲染聊天
+========================= */
 
 function render(){
- const box=document.getElementById("messages");
- box.innerHTML="";
- if(!messages.length){
-   box.innerHTML='<div class="empty">G 在等你，随便说点什么吧。</div>';
-   return;
- }
- messages.forEach(m=>{
-   const r=document.createElement("div");
-   r.className="row "+(m.role==="user"?"me":"");
-   
-   const wrap=document.createElement("div");
-   wrap.className="bubble-wrap";
-   
-   const b=document.createElement("div");
-   b.className="bubble"; 
-   b.textContent=m.text;
-   
-   const tm=document.createElement("div");
-   tm.className="time"; 
-   tm.textContent=m.time||"";
-   
-   wrap.append(b,tm); 
-   r.appendChild(wrap); 
-   box.appendChild(r);
- });
- box.scrollTop=box.scrollHeight;
+
+  messagesBox.innerHTML = "";
+
+  if(!messages.length){
+
+    messagesBox.innerHTML =
+      '<div class="empty">G 在等你，随便说点什么吧。</div>';
+
+    return;
+  }
+
+
+  messages.forEach(m => {
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "row " +
+      (m.role === "user" ? "me" : "");
+
+
+    const wrap =
+      document.createElement("div");
+
+    wrap.className =
+      "bubble-wrap";
+
+
+    const bubble =
+      document.createElement("div");
+
+    bubble.className =
+      "bubble";
+
+    bubble.textContent =
+      m.text;
+
+
+    const time =
+      document.createElement("div");
+
+    time.className =
+      "time";
+
+    time.textContent =
+      m.time || "";
+
+
+    wrap.append(
+      bubble,
+      time
+    );
+
+    row.appendChild(wrap);
+
+    messagesBox.appendChild(row);
+
+  });
+
+
+  messagesBox.scrollTop =
+    messagesBox.scrollHeight;
+
 }
+
+
+/* =========================
+   添加消息
+========================= */
 
 function add(role,text){
- messages.push({role,text,time:now()});
- save(); render();
+
+  messages.push({
+    role:role,
+    text:text,
+    time:now()
+  });
+
+  save();
+  render();
+
 }
+
+
+/* =========================
+   设置
+========================= */
 
 function toggleSettings(){
- document.getElementById("settings").classList.toggle("open");
+
+  document
+    .getElementById("settings")
+    .classList.toggle("open");
+
 }
 
-apiInput.addEventListener("change",()=>{
- localStorage.setItem(KEY_KEY,apiInput.value.trim());
-});
 
-bgInput.addEventListener("change",()=>{
- const url = bgInput.value.trim();
- localStorage.setItem(BG_KEY, url);
- document.getElementById("appBg").style.backgroundImage = url ? `url('${url}')` : 'none';
-});
+apiInput.addEventListener(
+  "change",
+  () => {
+
+    localStorage.setItem(
+      KEY_KEY,
+      apiInput.value.trim()
+    );
+
+  }
+);
+
+
+bgInput.addEventListener(
+  "change",
+  () => {
+
+    const url =
+      bgInput.value.trim();
+
+    localStorage.setItem(
+      BG_KEY,
+      url
+    );
+
+    appBg.style.backgroundImage =
+      url
+      ? `url("${url}")`
+      : "none";
+
+  }
+);
+
+
+/* =========================
+   清空
+========================= */
 
 function clearChat(){
- if(confirm("清空全部聊天记录？")){
-   messages=[]; save(); render();
- }
+
+  if(
+    confirm("清空全部聊天记录？")
+  ){
+
+    messages = [];
+
+    save();
+
+    render();
+
+  }
+
 }
 
-function sendQuick(text) {
- document.getElementById("input").value = text;
- document.querySelector("form").requestSubmit();
+
+/* =========================
+   快捷按钮
+========================= */
+
+function sendQuick(text){
+
+  input.value = text;
+
+  document
+    .querySelector("form")
+    .requestSubmit();
+
 }
+
+
+/* =========================
+   打字动画
+========================= */
+
+function createTyping(){
+
+  const row =
+    document.createElement("div");
+
+  row.className = "row";
+
+  row.id = "typingIndicator";
+
+
+  row.innerHTML = `
+    <div class="bubble-wrap">
+      <div class="bubble">
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+
+  messagesBox.appendChild(row);
+
+  messagesBox.scrollTop =
+    messagesBox.scrollHeight;
+
+}
+
+
+function removeTyping(){
+
+  const typing =
+    document.getElementById(
+      "typingIndicator"
+    );
+
+  if(typing){
+    typing.remove();
+  }
+
+}
+
+
+/* =========================
+   创建正在生成的消息
+========================= */
+
+function createStreamingMessage(){
+
+  const row =
+    document.createElement("div");
+
+  row.className = "row";
+
+  row.id = "streamingRow";
+
+
+  const wrap =
+    document.createElement("div");
+
+  wrap.className =
+    "bubble-wrap";
+
+
+  const bubble =
+    document.createElement("div");
+
+  bubble.className =
+    "bubble";
+
+  bubble.textContent = "";
+
+
+  wrap.appendChild(bubble);
+
+  row.appendChild(wrap);
+
+  messagesBox.appendChild(row);
+
+
+  return {
+    row,
+    bubble
+  };
+
+}
+
+
+/* =========================
+   发送
+========================= */
 
 async function send(e){
- e.preventDefault();
- const input=document.getElementById("input");
- const btn=document.getElementById("sendBtn");
- const text=input.value.trim();
- if(!text)return;
 
- const key=apiInput.value.trim();
- if(!key){
-   document.getElementById("settings").classList.add("open");
-   alert("请先在“设置”里输入你的 Gemini API Key。");
-   return;
- }
+  e.preventDefault();
 
- add("user",text);
- input.value="";
- input.style.height="44px";
- btn.disabled=true;
- document.getElementById("status").textContent="typing…";
- document.getElementById("statusDot").style.background = "#ff9500";
 
- // 临时插入一个“正在输入”的占位气泡
- const box=document.getElementById("messages");
- const typingRow=document.createElement("div");
- typingRow.className="row";
- typingRow.id="typingIndicator";
- typingRow.innerHTML=`<div class="bubble-wrap"><div class="bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>`;
- box.appendChild(typingRow);
- box.scrollTop=box.scrollHeight;
+  const text =
+    input.value.trim();
 
- try{
-   const contents=messages
-     .filter(m=>m.role==="user"||m.role==="model")
-     .slice(-30)
-     .map(m=>({role:m.role,parts:[{text:m.text}]}));
+  if(!text){
+    return;
+  }
 
-   const body={
-     systemInstruction:{parts:[{text:systemPrompt}]},
-     contents
-   };
 
-   const url=`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(key)}`;
+  const key =
+    apiInput.value.trim();
+
+
+  if(!key){
+
+    document
+      .getElementById("settings")
+      .classList.add("open");
+
+    alert(
+      "请先在“设置”里输入 Gemini API Key。"
+    );
+
+    return;
+  }
+
+
+  /* 用户消息 */
+
+  add(
+    "user",
+    text
+  );
+
+
+  input.value = "";
+
+  input.style.height =
+    "44px";
+
+
+  sendBtn.disabled = true;
+
+  status.textContent =
+    "typing…";
+
+  statusDot.style.background =
+    "#ff9500";
+
+
+  createTyping();
+
+
+  /* =========================
+     超时控制
+  ========================= */
+
+  const controller =
+    new AbortController();
+
+  const timeoutId =
+    setTimeout(
+      () => controller.abort(),
+      TIMEOUT
+    );
+
+
+  try{
+
+    /* =========================
+       最近 10 条
+    ========================= */
+
+    const contents =
+      messages
+        .filter(
+          m =>
+            m.role === "user" ||
+            m.role === "model"
+        )
+        .slice(-HISTORY_LIMIT)
+        .map(
+          m => ({
+            role:m.role,
+            parts:[
+              {
+                text:m.text
+              }
+            ]
+          })
+        );
+
+
+    /* =========================
+       请求
+    ========================= */
+
+    const body = {
+
+      systemInstruction:{
+        parts:[
+          {
+            text:systemPrompt
+          }
+        ]
+      },
+
+      contents,
+
+      generationConfig:{
+        thinkingConfig:{
+          thinkingLevel:"low"
+        }
+      }
+
+    };
+
+
+    const url =
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`;
+
+
+    const res =
+      await fetch(
+        url,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(body),
+
+          signal:
+            controller.signal
+        }
+      );
+
+
+    clearTimeout(timeoutId);
+
+
+    /* =========================
+       错误
+    ========================= */
+
+    if(!res.ok){
+
+      let data = {};
+
+      try{
+        data =
+          await res.json();
+      }catch(e){}
+
+      throw new Error(
+        data?.error?.message ||
+        `请求失败：HTTP ${res.status}`
+      );
+
+    }
+
+
+    if(!res.body){
+
+      throw new Error(
+        "浏览器不支持流式回复。"
+      );
+
+    }
+
+
+    /* =========================
+       移除 typing
+    ========================= */
+
+    removeTyping();
+
+
+    /* =========================
+       创建模型气泡
+    ========================= */
+
+    const ui =
+      createStreamingMessage();
+
+
+    let modelText = "";
+
+
+    /* =========================
+       SSE
+    ========================= */
+
+    const reader =
+      res.body.getReader();
+
+    const decoder =
+      new TextDecoder();
+
+    let buffer = "";
+
+
+    while(true){
+
+      const result =
+        await reader.read();
+
+
+      if(result.done){
+        break;
+      }
+
+
+      buffer +=
+        decoder.decode(
+          result.value,
+          {
+            stream:true
+          }
+        );
+
+
+      const lines =
+        buffer.split("\n");
+
+
+      buffer =
+        lines.pop() || "";
+
+
+      for(
+        const line of lines
+      ){
+
+        const trimmed =
+          line.trim();
+
+
+        if(
+          !trimmed ||
+          !trimmed.startsWith("data:")
+        ){
+          continue;
+        }
+
+
+        const jsonText =
+          trimmed
+            .slice(5)
+            .trim();
+
+
+        if(!jsonText){
+          continue;
+        }
+
+
+        try{
+
+          const data =
+            JSON.parse(jsonText);
+
+
+          const parts =
+            data
+              ?.candidates?.[0]
+              ?.content?.parts || [];
+
+
+          for(
+            const part of parts
+          ){
+
+            if(
+              typeof part.text ===
+              "string"
+            ){
+
+              modelText +=
+                part.text;
+
+
+              ui.bubble.textContent =
+                modelText;
+
+
+              messagesBox.scrollTop =
+                messagesBox.scrollHeight;
+
+            }
+
+          }
+
+
+        }catch(err){
+
+          /* 忽略无法解析的 SSE 块 */
+
+        }
+
+      }
+
+    }
+
+
+    /* =========================
+       空回复
+    ========================= */
+
+    if(!modelText){
+
+      modelText = "……";
+
+      ui.bubble.textContent =
+        modelText;
+
+    }
+
+
+    /* =========================
+       保存模型消息
+    ========================= */
+
+    messages.push({
+      role:"model",
+      text:modelText,
+      time:now()
+    });
+
+
+    save();
+
+
+  }catch(err){
+
+    clearTimeout(timeoutId);
+
+    removeTyping();
+
+
+    const streamingRow =
+      document.getElementById(
+        "streamingRow"
+      );
+
+    if(streamingRow){
+      streamingRow.remove();
+    }
+
+
+    let msg =
+      err?.message ||
+      "未知错误";
+
+
+    if(
+      err?.name === "AbortError"
+    ){
+
+      msg =
+        "Gemini 等太久了，超时了。\n\n"+
+        "你可以再试一次。";
+
+    }
+
+
+    add(
+      "model",
+      "出错了：\n" +
+      msg
+    );
+
+
+  }finally{
+
+    sendBtn.disabled =
+      false;
+
+    status.textContent =
+      "online";
+
+    statusDot.style.background =
+      "#34c759";
+
+  }
+
+}
+
+
+/* =========================
+   输入框自动高度
+========================= */
+
+input.addEventListener(
+  "input",
+  e => {
+
+    e.target.style.height =
+      "44px";
+
+    e.target.style.height =
+      Math.min(
+        e.target.scrollHeight,
+        120
+      ) + "px";
+
+  }
+);
+
+
+/* =========================
+   Enter 发送
+========================= */
+
+input.addEventListener(
+  "keydown",
+  e => {
+
+    if(
+      e.key === "Enter" &&
+      !e.shiftKey
+    ){
+
+      e.preventDefault();
+
+      document
+        .querySelector("form")
+        .requestSubmit();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   启动
+========================= */
+
+render();
+
+</script>
+
+</body>
+</html>EL}:generateContent?key=${encodeURIComponent(key)}`;
    const res=await fetch(url,{
      method:"POST",
      headers:{"Content-Type":"application/json"},
